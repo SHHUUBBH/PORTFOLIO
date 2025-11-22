@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import portraitImage from "@/assets/my profile.png";
+import resumePdf from "@/doc/RESUME (2).pdf";
 import { SiPython, SiMysql, SiTensorflow, SiScikitlearn, SiHuggingface } from "react-icons/si";
 import { FaBrain, FaChartBar } from "react-icons/fa";
 
@@ -14,6 +15,15 @@ const Hero = () => {
     { name: "LLaMA", icon: SiHuggingface, color: "#FFD21E" },
     { name: "Stable Diffusion", icon: FaBrain, color: "#9333EA" }
   ];
+
+  const handleResumeDownload = () => {
+    const link = document.createElement('a');
+    link.href = resumePdf;
+    link.download = 'Subhro_Pal_Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   return <section id="home" className="min-h-screen flex items-center relative overflow-hidden pt-16 sm:pt-20">
     <div className="absolute inset-0 hero-gradient opacity-50"></div>
     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background"></div>
@@ -42,7 +52,7 @@ const Hero = () => {
           })}>
             Got a project?
           </Button>
-          <Button size="lg" variant="outline" className="border-2 hover:bg-accent hover:scale-105 transition-all duration-300 w-full sm:w-auto">
+          <Button size="lg" variant="outline" className="border-2 hover:bg-accent hover:scale-105 transition-all duration-300 w-full sm:w-auto" onClick={handleResumeDownload}>
             My resume
           </Button>
         </div>
