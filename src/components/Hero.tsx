@@ -19,15 +19,21 @@ const Hero = () => {
     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background"></div>
 
     <div className="container mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-8 md:gap-16 items-center relative z-10">
-      <div className="space-y-6 sm:space-y-8 animate-fade-in">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold leading-tight text-gray-100">
-          Hello<span className="text-[#9500ff]">.</span>
-          <br />
-          I'm <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Subhro Pal</span>
-          <br />
-          <span className="text-xl sm:text-2xl md:text-3xl lg:text-5xl text-[#7c00ff] font-extrabold [text-shadow:_-1px_-1px_0_white,_1px_-1px_0_white,_-1px_1px_0_white,_1px_1px_0_white]">
-            ASPIRING DATA SCIENTIST
-          </span>
+      {/* Mobile Profile Image - Above text */}
+      <div className="relative animate-scale-in lg:hidden flex justify-center order-1">
+        <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+          <div className="aspect-square rounded-full overflow-hidden border-4 border-primary/30 shadow-2xl">
+            <img alt="Subhro Pal portrait" className="w-full h-full object-cover" src={portraitImage} />
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-6 sm:space-y-8 animate-fade-in order-2">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold leading-tight text-gray-100">Hello
+          <span className="text-[#9500ff]"></span>
+          <br />I'm <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Subhro Pal</span>
+          <br /><span className="text-xl sm:text-2xl md:text-3xl lg:text-5xl text-[#7c00ff] font-extrabold [text-shadow:_-1px_-1px_0_white,_1px_-1px_0_white,_-1px_1px_0_white,_1px_1px_0_white]">ASPIRING DATA SCIENTIST</span>
         </h1>
 
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
@@ -65,20 +71,10 @@ const Hero = () => {
       </div>
 
       {/* Desktop Profile Image */}
-      <div className="relative animate-scale-in hidden lg:block">
+      <div className="relative animate-scale-in hidden lg:block order-3">
         <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="relative w-full max-w-md mx-auto">
           <div className="aspect-square rounded-full overflow-hidden border-4 border-primary/30 shadow-2xl hover:border-primary/50 transition-all duration-500 hover:scale-105">
-            <img alt="Subhro Pal portrait" className="w-full h-full object-cover" src={portraitImage} />
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Profile Image */}
-      <div className="relative animate-scale-in lg:hidden flex justify-center mt-8">
-        <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="relative w-48 h-48 sm:w-56 sm:h-56">
-          <div className="aspect-square rounded-full overflow-hidden border-4 border-primary/30 shadow-2xl">
             <img alt="Subhro Pal portrait" className="w-full h-full object-cover" src={portraitImage} />
           </div>
         </div>
