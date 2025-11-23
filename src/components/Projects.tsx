@@ -33,7 +33,7 @@ const Projects = () => {
       image: reservoirImage,
       tags: ["Power BI", "SQL", "Python"],
       github: "https://github.com/SHHUUBBH/Chhattisgarh-Water-Model",
-      live: "#",
+      live: "https://chhattisgarh-water-model-kkrpl4qikbkbkwepashpkb.streamlit.app/#2024-forecast-vs-actual-storage",
     },
   ];
 
