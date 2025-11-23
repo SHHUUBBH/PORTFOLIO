@@ -97,6 +97,8 @@ const Projects = () => {
                     size="sm"
                     variant="outline"
                     className="flex-1 hover:bg-accent hover:scale-105 transition-all duration-300"
+                    onClick={() => window.open(project.live, '_blank')}
+                    disabled={project.live === '#'}
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
                     Live
