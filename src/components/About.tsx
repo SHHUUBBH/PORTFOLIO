@@ -1,14 +1,47 @@
 import { useEffect, useRef, useState } from "react";
 import { Brain, BarChart3, Server, Cpu, Database, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { motion, useInView } from "framer-motion";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { motion, useInView, useScroll, useTransform, Variants } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 /* ── Shared easing ──────────────────────────────────────────── */
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const PREMIUM_EASE = [0.25, 0.4, 0.25, 1] as const;
+
+/* ── Variants ───────────────────────────────────────────────── */
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 40, filter: "blur(8px)", scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    scale: 1,
+    transition: {
+      duration: 0.9,
+      ease: PREMIUM_EASE,
+    },
+  },
+};
+
+const cardHoverVariants: Variants = {
+  rest: { scale: 1, y: 0, z: 0 },
+  hover: {
+    scale: 1.03,
+    y: -5,
+    zIndex: 10,
+    transition: { duration: 0.4, ease: "backOut" },
+  },
+};
 
 /* ── Animated Counter ───────────────────────────────────────── */
 function AnimatedCounter({ target, suffix = "" }: { target: number | string; suffix?: string }) {
@@ -19,12 +52,12 @@ function AnimatedCounter({ target, suffix = "" }: { target: number | string; suf
   useEffect(() => {
     if (!inView || typeof target !== "number") return;
     let raf: number;
-    const duration = 1800;
+    const duration = 2000;
     const startTime = performance.now();
     const tick = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
+      const eased = 1 - Math.pow(1 - progress, 4); // Quartic ease out
       setCount(Math.floor(eased * target));
       if (progress < 1) raf = requestAnimationFrame(tick);
       else setCount(target);
@@ -40,47 +73,21 @@ function AnimatedCounter({ target, suffix = "" }: { target: number | string; suf
   );
 }
 
-/* ── 3D Tilt Card (GSAP) ────────────────────────────────────── */
-function TiltCard({ children, className }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    gsap.to(el, { rotateY: x * 14, rotateX: -y * 14, duration: 0.25, ease: "power2.out", transformPerspective: 900 });
-  };
-  const handleLeave = () =>
-    gsap.to(ref.current, { rotateY: 0, rotateX: 0, duration: 0.6, ease: "elastic.out(1, 0.5)" });
-
-  return (
-    <div
-      ref={ref}
-      className={className}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-      style={{ transformStyle: "preserve-3d", willChange: "transform" }}
-    >
-      {children}
-    </div>
-  );
-}
-
-/* ── About ──────────────────────────────────────────────────── */
+/* ── About Component ────────────────────────────────────────── */
 const About = () => {
-  const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], [100, -100]); // Parallax effect
 
   const services = [
     {
       icon: Brain,
-      title: "Machine Learning & Deep Learning",
+      title: "Machine Learning & DL",
       description: "Design and train ML/DL models — from classic sklearn pipelines to PyTorch neural networks — solving real-world classification, regression, and generation tasks.",
     },
     {
       icon: BarChart3,
-      title: "EDA & Data Visualization",
+      title: "EDA & Visualization",
       description: "Exploratory Data Analysis with Python (Pandas, NumPy, Matplotlib, Seaborn, Plotly) and Power BI — turning raw data into compelling visual stories.",
     },
     {
@@ -90,7 +97,7 @@ const About = () => {
     },
     {
       icon: Database,
-      title: "Data Engineering & SQL",
+      title: "Data Engineering",
       description: "Structured data handling with MySQL and MongoDB, advanced SQL queries, data wrangling, and building efficient data pipelines for analytics.",
     },
     {
@@ -100,7 +107,7 @@ const About = () => {
     },
     {
       icon: Sparkles,
-      title: "AI Research & Simulation",
+      title: "AI Research",
       description: "Participant in Tata iQ / Forage virtual simulations, applying data science workflows to real enterprise business problems.",
     },
   ];
@@ -114,132 +121,118 @@ const About = () => {
 
   const skills = ["Python", "SQL", "EDA", "ML/DL", "LLaMA", "Stable Diffusion", "NLP", "Power BI", "FastAPI"];
 
-  /* GSAP scroll reveals — only on elements NOT controlled by Framer Motion */
-  useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced || !sectionRef.current) return;
-
-    const ctx = gsap.context(() => {
-      // Heading pinned reveal
-      gsap.from(".about-heading", {
-        y: 60, opacity: 0, duration: 0.85, ease: "power3.out",
-        scrollTrigger: { trigger: ".about-heading", start: "top 88%", once: true },
-      });
-      // Service cards stagger
-      gsap.from(".about-service-card", {
-        y: 70, opacity: 0, duration: 0.7, stagger: 0.09, ease: "power3.out",
-        scrollTrigger: { trigger: ".about-service-card", start: "top 82%", once: true },
-      });
-      // Journey panel slide in
-      gsap.from(".about-journey", {
-        x: 80, opacity: 0, duration: 0.85, ease: "power3.out",
-        scrollTrigger: { trigger: ".about-journey", start: "top 82%", once: true },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section ref={sectionRef} id="about" className="py-16 sm:py-24 md:py-32 relative overflow-hidden">
+    <section ref={containerRef} id="about" className="py-20 sm:py-32 relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
 
-      {/* Decorative blobs */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Parallax Blobs */}
+      <motion.div style={{ y }} className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+      <motion.div style={{ y: useTransform(scrollYProgress, [0, 1], [-50, 50]) }} className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="container mx-auto px-4 sm:px-6 relative">
+      <motion.div
+        className="container mx-auto px-4 sm:px-6 relative"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-10%" }}
+      >
         {/* Heading */}
-        <div className="about-heading text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">About Me</h2>
-          <div className="w-20 h-1 bg-primary mx-auto" />
-        </div>
+        <motion.div variants={itemVariants} className="text-center mb-16 sm:mb-20">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/50">
+            About Me
+          </h2>
+          <div className="w-24 h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto rounded-full" />
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
-          {/* Service Cards */}
-          <div className="space-y-3 sm:space-y-4">
-            <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-foreground/90">What I Do</h3>
-            {services.map((service, index) => (
-              <TiltCard key={index} className="about-service-card">
-                <Card className="p-4 sm:p-5 flex items-start gap-3 sm:gap-4 hover:shadow-xl transition-all duration-300 bg-card/20 backdrop-blur border-border/50 hover:border-primary/40">
-                  <div className="bg-primary/10 p-3 rounded-lg flex-shrink-0">
-                    <service.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold mb-1">{service.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{service.description}</p>
-                  </div>
-                </Card>
-              </TiltCard>
-            ))}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+          {/* Left Column: Services Grid */}
+          <div className="space-y-8">
+            <motion.div variants={itemVariants}>
+              <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                Technical Arsenal
+              </h3>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {services.map((service, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  custom={index}
+                  whileHover="hover"
+                  initial="rest"
+                >
+                  <Card className="h-full p-5 bg-card/10 backdrop-blur-sm border-white/5 hover:border-primary/20 transition-colors duration-300 overflow-hidden group relative">
+                    <motion.div variants={cardHoverVariants} className="relative z-10 h-full flex flex-col">
+                      <div className="bg-primary/10 w-fit p-3 rounded-xl mb-4 group-hover:bg-primary/20 transition-colors">
+                        <service.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-lg mb-2">{service.title}</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {service.description}
+                      </p>
+                    </motion.div>
+                    {/* Hover Glow */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
-          {/* Right column: Journey + Stats */}
-          <div className="space-y-8">
-            {/* Journey panel — GSAP animates this, no Framer Motion conflict */}
-            <div className="about-journey bg-card/20 backdrop-blur border border-border/50 rounded-xl p-5 sm:p-8 shadow-lg space-y-4 sm:space-y-5">
-              <h3 className="text-2xl font-semibold">My Journey</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                I'm a <span className="text-primary font-semibold">BCA (Hons.) in Data Science</span> graduate, passionate about turning complex data into actionable intelligence. My core stack is <strong>Python, SQL, EDA, and Data Visualization</strong> — with deep hands-on experience in Machine Learning, Deep Learning, and Generative AI.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                I've built systems using <span className="text-primary font-semibold">LLaMA, Stable Diffusion, NLP pipelines</span>, and deployed applications end-to-end. Key projects include <strong>CONTRA</strong> (ensemble ML), <strong>ORBITUNE</strong> (AI-powered NLP system), and a <strong>Reservoir Forecasting</strong> platform combining Power BI, SQL, and time-series ML.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                I completed a <span className="text-primary font-semibold">Data Science Internship at The Developers Arena</span> and participated in the <strong>Tata iQ / Forage</strong> virtual simulation — applying real enterprise data science workflows.
-              </p>
+          {/* Right Column: Journey & Stats */}
+          <div className="space-y-8 lg:pt-12">
+            <motion.div variants={itemVariants} className="bg-card/10 backdrop-blur-md border border-white/10 rounded-2xl p-6 sm:p-10 shadow-2xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
 
-              {/* Skill tags */}
-              <div className="flex flex-wrap gap-2 pt-2">
+              <h3 className="text-2xl font-semibold mb-6">My Journey</h3>
+              <div className="space-y-4 text-muted-foreground leading-relaxed relative z-10">
+                <p>
+                  I'm a <span className="text-foreground font-medium border-b border-primary/30">BCA (Hons.) in Data Science</span> graduate, passionate about turning complex data into actionable intelligence. My core stack is <span className="text-foreground">Python, SQL, EDA, and Data Visualization</span> — with deep hands-on experience in Machine Learning, Deep Learning, and Generative AI.
+                </p>
+                <p>
+                  I've built systems using <span className="text-primary font-medium">LLaMA, Stable Diffusion, NLP pipelines</span>, and deployed applications end-to-end. Key projects include <strong>CONTRA</strong> (ensemble ML), <strong>ORBITUNE</strong> (AI-powered NLP system), and a <strong>Reservoir Forecasting</strong> platform.
+                </p>
+                <p>
+                  Completed a <span className="text-foreground font-medium">Data Science Internship</span> and participated in the <strong>Tata iQ / Forage</strong> simulation.
+                </p>
+              </div>
+
+              {/* Skills Tags */}
+              <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-white/5">
                 {skills.map((tag, i) => (
                   <motion.span
                     key={tag}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
-                    whileHover={{ scale: 1.12, y: -2 }}
-                    className="text-xs font-mono px-3 py-1 rounded-full border border-primary/30 text-primary/80 bg-primary/5 cursor-default hover:bg-primary/15 transition-colors"
+                    className="text-xs font-mono px-3 py-1.5 rounded-full bg-primary/5 text-primary/80 border border-primary/20"
+                    whileHover={{ scale: 1.1, backgroundColor: "rgba(var(--primary), 0.15)" }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   >
                     {tag}
                   </motion.span>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            {/* ── Stat Cards ─────────────────────────────────────────
-                ONLY Framer Motion here — no GSAP touching these.
-                whileInView handles the scroll reveal trigger.
-            ──────────────────────────────────────────────────────── */}
+            {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4">
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, scale: 0.75, y: 30 }}
-                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-60px" }}
-                  transition={{
-                    duration: 0.55,
-                    delay: index * 0.1,
-                    ease: EASE,
-                  }}
-                  whileHover={{
-                    y: -6,
-                    scale: 1.03,
-                    boxShadow: "0 16px 40px rgba(149,0,255,0.25)",
-                  }}
-                  className="about-stat text-center p-5 rounded-xl bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors duration-300 group cursor-default"
+                  variants={itemVariants}
+                  whileHover={{ y: -5, boxShadow: "0 10px 30px -10px rgba(var(--primary), 0.3)" }}
+                  className="p-6 rounded-2xl bg-gradient-to-br from-card/30 to-card/10 border border-white/5 text-center group cursor-default"
                 >
-                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1 group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-3xl sm:text-4xl font-bold text-primary mb-2 group-hover:scale-110 transition-transform duration-300 inline-block">
                     <AnimatedCounter target={stat.value as number} suffix={stat.suffix} />
                   </div>
-                  <div className="text-xs sm:text-sm text-muted-foreground font-medium">{stat.label}</div>
+                  <div className="text-xs sm:text-sm text-foreground/60 font-medium uppercase tracking-wider">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };

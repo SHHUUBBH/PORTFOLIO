@@ -7,6 +7,7 @@ import nvidiaImg from "@/assets/NVIDIA.png";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SectionReveal } from "@/components/ui/SectionReveal";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -93,105 +94,107 @@ const Certifications = () => {
     }, []);
 
     return (
-        <section ref={sectionRef} id="certifications" className="py-16 sm:py-24 md:py-32 relative overflow-hidden">
-            <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
-            <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-600/8 rounded-full blur-3xl pointer-events-none" />
+        <SectionReveal>
+            <section ref={sectionRef} id="certifications" className="py-16 sm:py-24 md:py-32 relative overflow-hidden">
+                <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
+                <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-600/8 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="container mx-auto px-4 sm:px-6 relative">
-                {/* Heading */}
-                <div className="cert-heading text-center mb-12 sm:mb-16">
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Certifications</h2>
-                    <div className="w-20 h-1 bg-primary mx-auto mb-4" />
-                    <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto px-4">
-                        Professional certifications and achievements in data science and AI
-                    </p>
-                </div>
+                <div className="container mx-auto px-4 sm:px-6 relative">
+                    {/* Heading */}
+                    <div className="cert-heading text-center mb-12 sm:mb-16">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Certifications</h2>
+                        <div className="w-20 h-1 bg-primary mx-auto mb-4" />
+                        <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto px-4">
+                            Professional certifications and achievements in data science and AI
+                        </p>
+                    </div>
 
-                {/* Cards — ONLY Framer Motion controls visibility */}
-                <div className="grid sm:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
-                    {certifications.map((cert, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 50 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, margin: "-60px" }}
-                            transition={{ duration: 0.6, delay: index * 0.1, ease: EASE }}
-                            whileHover={{
-                                y: -8,
-                                boxShadow: `0 24px 48px ${cert.accent}30`,
-                                borderColor: cert.accent,
-                            }}
-                            style={{ borderRadius: "0.75rem" }}
-                        >
-                            <Card
-                                className="p-6 space-y-4 transition-colors duration-300 bg-card/20 backdrop-blur border-border/50 group cursor-pointer h-full"
-                                onClick={() => {
-                                    if (cert.link) { window.open(cert.link, "_blank"); return; }
-                                    if (cert.imageUrl) openLightbox(cert.imageUrl);
+                    {/* Cards — ONLY Framer Motion controls visibility */}
+                    <div className="grid sm:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
+                        {certifications.map((cert, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 50 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-60px" }}
+                                transition={{ duration: 0.6, delay: index * 0.1, ease: EASE }}
+                                whileHover={{
+                                    y: -8,
+                                    boxShadow: `0 24px 48px ${cert.accent}30`,
+                                    borderColor: cert.accent,
                                 }}
+                                style={{ borderRadius: "0.75rem" }}
                             >
-                                <div className="flex items-start gap-4">
-                                    {/* Icon */}
-                                    <motion.div
-                                        className="p-3 rounded-xl flex-shrink-0"
-                                        style={{ background: `${cert.accent}18` }}
-                                        whileHover={{ scale: 1.1, rotate: 5 }}
-                                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                    >
-                                        <Award className="w-6 h-6" style={{ color: cert.accent }} />
-                                    </motion.div>
+                                <Card
+                                    className="p-6 space-y-4 transition-colors duration-300 bg-card/20 backdrop-blur border-border/50 group cursor-pointer h-full"
+                                    onClick={() => {
+                                        if (cert.link) { window.open(cert.link, "_blank"); return; }
+                                        if (cert.imageUrl) openLightbox(cert.imageUrl);
+                                    }}
+                                >
+                                    <div className="flex items-start gap-4">
+                                        {/* Icon */}
+                                        <motion.div
+                                            className="p-3 rounded-xl flex-shrink-0"
+                                            style={{ background: `${cert.accent}18` }}
+                                            whileHover={{ scale: 1.1, rotate: 5 }}
+                                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                        >
+                                            <Award className="w-6 h-6" style={{ color: cert.accent }} />
+                                        </motion.div>
 
-                                    <div className="flex-1 min-w-0">
-                                        {/* Title row */}
-                                        <div className="flex items-start justify-between gap-2 mb-1">
-                                            <h3 className="text-base sm:text-lg font-semibold group-hover:text-primary transition-colors duration-300 leading-snug">
-                                                {cert.title}
-                                            </h3>
-                                            {cert.link ? (
-                                                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 mt-1" />
-                                            ) : cert.imageUrl ? (
-                                                <ImageIcon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 mt-1" />
-                                            ) : null}
-                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            {/* Title row */}
+                                            <div className="flex items-start justify-between gap-2 mb-1">
+                                                <h3 className="text-base sm:text-lg font-semibold group-hover:text-primary transition-colors duration-300 leading-snug">
+                                                    {cert.title}
+                                                </h3>
+                                                {cert.link ? (
+                                                    <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 mt-1" />
+                                                ) : cert.imageUrl ? (
+                                                    <ImageIcon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 mt-1" />
+                                                ) : null}
+                                            </div>
 
-                                        {/* Meta */}
-                                        <p className="text-muted-foreground text-sm mb-1 font-medium">
-                                            {cert.issuer} · {cert.date}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground/50 font-mono mb-3 truncate">
-                                            ID: {cert.credentialId}
-                                        </p>
+                                            {/* Meta */}
+                                            <p className="text-muted-foreground text-sm mb-1 font-medium">
+                                                {cert.issuer} · {cert.date}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground/50 font-mono mb-3 truncate">
+                                                ID: {cert.credentialId}
+                                            </p>
 
-                                        {/* Skill tags */}
-                                        <div className="flex flex-wrap gap-2">
-                                            {cert.tags.map((tag, ti) => (
-                                                <motion.div
-                                                    key={tag}
-                                                    initial={{ opacity: 0, scale: 0.75 }}
-                                                    whileInView={{ opacity: 1, scale: 1 }}
-                                                    viewport={{ once: true }}
-                                                    transition={{ delay: index * 0.08 + ti * 0.05, duration: 0.35, ease: EASE }}
-                                                    whileHover={{ scale: 1.1, y: -2 }}
-                                                >
-                                                    <Badge
-                                                        variant="secondary"
-                                                        className="text-xs transition-colors cursor-default"
-                                                        style={{ borderColor: `${cert.accent}40` }}
+                                            {/* Skill tags */}
+                                            <div className="flex flex-wrap gap-2">
+                                                {cert.tags.map((tag, ti) => (
+                                                    <motion.div
+                                                        key={tag}
+                                                        initial={{ opacity: 0, scale: 0.75 }}
+                                                        whileInView={{ opacity: 1, scale: 1 }}
+                                                        viewport={{ once: true }}
+                                                        transition={{ delay: index * 0.08 + ti * 0.05, duration: 0.35, ease: EASE }}
+                                                        whileHover={{ scale: 1.1, y: -2 }}
                                                     >
-                                                        {tag}
-                                                    </Badge>
-                                                </motion.div>
-                                            ))}
+                                                        <Badge
+                                                            variant="secondary"
+                                                            className="text-xs transition-colors cursor-default"
+                                                            style={{ borderColor: `${cert.accent}40` }}
+                                                        >
+                                                            {tag}
+                                                        </Badge>
+                                                    </motion.div>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </Card>
-                        </motion.div>
-                    ))}
+                                </Card>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </SectionReveal>
     );
 };
 

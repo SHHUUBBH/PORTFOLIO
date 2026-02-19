@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { gsap } from "gsap";
 import matplotlibPng from "@/assets/Matplotlib.png";
+import { SectionReveal } from "@/components/ui/SectionReveal";
 
 /* ─────────────────────────────────────────────────────────────
    Inline SVG data URIs for logos not on Simple Icons CDN
@@ -49,88 +49,63 @@ const TECHS = [
     { name: "GSAP", color: "#88CE02", icon: "https://cdn.simpleicons.org/greensock/88CE02" },
 ];
 
-// Triplicate for a truly seamless loop at any screen width
-const DUPED = [...TECHS, ...TECHS, ...TECHS];
+// Duplicate array twice for a seamless loop (2 full sets)
+const DUPED = [...TECHS, ...TECHS];
 
 /* ── TechStack ──────────────────────────────────────────────── */
 const TechStack = () => {
-    const trackRef = useRef<HTMLDivElement>(null);
-    const tweenRef = useRef<gsap.core.Tween | null>(null);
+    // Refs for GSAP are no longer needed for the loop itself, but we keep the ref if we need it for other things or clean up.
+    // Actually, we can remove the loop refs entirely.
     const [tooltip, setTooltip] = useState<string | null>(null);
 
-    useEffect(() => {
-        const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (prefersReduced) return;
-
-        // Animate from 0 → -33.333% (one full copy width) for seamless loop
-        tweenRef.current = gsap.to(trackRef.current, {
-            x: "-33.333%",
-            duration: 50,
-            ease: "none",
-            repeat: -1,
-        });
-
-        return () => {
-            tweenRef.current?.kill();
-        };
-    }, []);
-
-    const pause = () => tweenRef.current?.pause();
-    const resume = () => tweenRef.current?.resume();
-
     return (
-        <section
-            id="tech-stack"
-            className="py-16 sm:py-24 md:py-32 relative overflow-hidden"
-        >
-            <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
-
-            {/* Gradient fade masks on sides */}
-            <div className="absolute inset-y-0 left-0 w-20 sm:w-36 z-10 bg-gradient-to-r from-background to-transparent pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 w-20 sm:w-36 z-10 bg-gradient-to-l from-background to-transparent pointer-events-none" />
-
-            {/* Heading */}
-            <div className="container mx-auto px-4 sm:px-6 relative mb-12 sm:mb-16">
-                <div className="text-center">
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Tech Stack</h2>
-                    <div className="w-20 h-1 bg-primary mx-auto mb-4" />
-                    <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-                        Tools and technologies I work with — from data wrangling to model deployment
-                    </p>
-                </div>
-            </div>
-
-            {/*
-        ─── Single marquee row ───────────────────────────────────
-        py-6 gives vertical breathing room so scale-up cards
-        don't clip against the overflow:hidden edge.
-        overflow-hidden is only on the x axis via overflow-x-hidden.
-      */}
-            <div
-                className="overflow-x-hidden"
-                style={{ paddingBlock: "1.75rem" }}          /* vertical clearance for hover pop */
-                onMouseEnter={pause}
-                onMouseLeave={resume}
-                onFocus={pause}
-                onBlur={resume}
+        <SectionReveal>
+            <section
+                id="tech-stack"
+                className="py-16 sm:py-24 md:py-32 relative overflow-hidden"
             >
-                <div ref={trackRef} className="flex gap-4 w-max will-change-transform">
-                    {DUPED.map((tech, i) => (
-                        <TechCard key={`r - ${i} `} tech={tech} onTooltip={setTooltip} />
-                    ))}
-                </div>
-            </div>
+                <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
 
-            {/* Tooltip */}
-            {tooltip && (
-                <div
-                    className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-semibold px-4 py-2 rounded-full shadow-lg z-50 whitespace-nowrap"
-                    style={{ animation: "fadeIn 0.12s ease" }}
-                >
-                    {tooltip}
+                {/* Gradient fade masks on sides */}
+                <div className="absolute inset-y-0 left-0 w-20 sm:w-36 z-10 bg-gradient-to-r from-background to-transparent pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-20 sm:w-36 z-10 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+
+                {/* Heading */}
+                <div className="container mx-auto px-4 sm:px-6 relative mb-12 sm:mb-16">
+                    <div className="text-center">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Tech Stack</h2>
+                        <div className="w-20 h-1 bg-primary mx-auto mb-4" />
+                        <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+                            Tools and technologies I work with — from data wrangling to model deployment
+                        </p>
+                    </div>
                 </div>
-            )}
-        </section>
+
+                <div
+                    className="overflow-x-hidden group"
+                    style={{ paddingBlock: "1.75rem" }}
+                >
+                    <div
+                        className="flex gap-4 w-max animate-marquee will-change-transform group-hover:[animation-play-state:paused]"
+                        style={{ animationDuration: "25s" }} // Explicit speed control if needed
+                    >
+                        {DUPED.map((tech, i) => (
+                            <TechCard key={`tech-${i}`} tech={tech} onTooltip={setTooltip} />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Tooltip */}
+                {tooltip && (
+                    <div
+                        className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-semibold px-4 py-2 rounded-full shadow-lg z-50 whitespace-nowrap"
+                        style={{ animation: "fadeIn 0.12s ease" }}
+                    >
+                        {tooltip}
+                    </div>
+                )}
+            </section>
+        </SectionReveal>
     );
 };
 
@@ -149,9 +124,9 @@ function TechCard({
             className="flex flex-col items-center justify-center gap-2 w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 rounded-2xl bg-card/20 backdrop-blur border border-border/50 cursor-pointer select-none flex-shrink-0"
             whileHover={{
                 scale: 1.15,
-                boxShadow: `0 0 28px ${tech.color} 60`,
+                boxShadow: `0 0 28px ${tech.color}60`,
                 borderColor: tech.color,
-                backgroundColor: `${tech.color} 18`,
+                backgroundColor: `${tech.color}18`,
             }}
             transition={{ type: "spring", stiffness: 280, damping: 18 }}
             onHoverStart={() => onTooltip(tech.name)}
@@ -178,7 +153,7 @@ function TechCard({
                     {tech.name[0]}
                 </div>
             )}
-            <span className="text-[10px] sm:text-xs text-muted-foreground font-medium text-center leading-tight px-1 w-full truncate text-center">
+            <span className="text-[10px] sm:text-xs text-muted-foreground font-medium text-center leading-tight px-1 w-full truncate">
                 {tech.name}
             </span>
         </motion.div>
