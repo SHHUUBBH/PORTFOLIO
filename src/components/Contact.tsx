@@ -16,8 +16,8 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const socials = [
   { icon: Github, label: "GitHub", href: "https://github.com/SHHUUBBH", color: "#D0D0D0" },
-  { icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/subhro-pal-b7055a257/", color: "#0A66C2" },
-  { icon: Mail, label: "Email", href: "mailto:subhropal27@gmail.com", color: "#EA4335" },
+  { icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/subhro-pal-b00a60356/", color: "#0A66C2" },
+  { icon: Mail, label: "Email", href: "mailto:shubhropal62@gmail.com", color: "#EA4335" },
 ];
 
 const formFields = [
@@ -44,7 +44,7 @@ const Contact = () => {
       });
       gsap.from(".contact-social-item", {
         x: -40, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power3.out",
-        scrollTrigger: { trigger: ".bg-card\/20", start: "top 85%", once: true },
+        scrollTrigger: { trigger: ".bg-card/20", start: "top 85%", once: true },
       });
     }, sectionRef);
     return () => ctx.revert();
