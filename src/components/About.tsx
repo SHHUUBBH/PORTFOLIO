@@ -78,6 +78,7 @@ const About = () => {
   const containerRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [100, -100]); // Parallax effect
+  const y2 = useTransform(scrollYProgress, [0, 1], [-50, 50]); // Parallax effect (bottom blob)
 
   const services = [
     {
@@ -127,7 +128,7 @@ const About = () => {
 
       {/* Parallax Blobs */}
       <motion.div style={{ y }} className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-      <motion.div style={{ y: useTransform(scrollYProgress, [0, 1], [-50, 50]) }} className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
+      <motion.div style={{ y: y2 }} className="absolute -bottom-32 -right-32 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
 
       <motion.div
         className="container mx-auto px-4 sm:px-6 relative"

@@ -157,12 +157,29 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
-  }
-
   html {
     scroll-behavior: smooth;
+    /* Prevent font scaling on orientation change on iOS */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Prevent horizontal overflow from stray absolutely-positioned elements */
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
+    /* Smooth momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Eliminate 300 ms tap delay on interactive elements */
+  a,
+  button,
+  [role="button"],
+  [tabindex="0"] {
+    touch-action: manipulation;
   }
 }
 

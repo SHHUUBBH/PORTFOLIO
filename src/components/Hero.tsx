@@ -102,7 +102,7 @@ const Hero = () => {
     <section
       ref={containerRef}
       id="home"
-      className="relative min-h-screen flex items-center pt-20 overflow-hidden"
+      className="relative min-h-screen flex items-center pt-20 pb-10 overflow-hidden"
     >
       {/* Background Grid */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px] z-[1] pointer-events-none" />
@@ -251,6 +251,9 @@ function FloatingPhoto({
               alt="Subhro Pal portrait"
               className="w-full h-full object-cover"
               src={portraitImage}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
             />
           </motion.div>
         </motion.div>

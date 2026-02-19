@@ -19,7 +19,7 @@ export default function BackToTop() {
                 <motion.button
                     key="back-to-top"
                     onClick={scrollToTop}
-                    className="fixed bottom-8 right-8 z-[500] w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center group"
+                    className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[500] w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center group"
                     initial={{ opacity: 0, scale: 0.5, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.5, y: 20 }}

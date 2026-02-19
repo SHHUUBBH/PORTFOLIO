@@ -30,7 +30,7 @@ export default function CustomizePanel({ config, onConfigChange }: CustomizePane
           Customize
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[320px] bg-background/95 backdrop-blur-xl border-border/50">
+      <SheetContent className="w-full sm:w-[320px] bg-background/95 backdrop-blur-xl border-border/50 overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="text-2xl font-bold">Customize</SheetTitle>
         </SheetHeader>

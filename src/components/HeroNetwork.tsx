@@ -25,9 +25,12 @@ const HeroNetwork = () => {
         let width = 0;
         let height = 0;
 
+        // Reduce load on mobile / touch devices
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
         // Configuration
-        const NODE_COUNT = 60; // Number of floating data points
-        const CONNECTION_DISTANCE = 180; // Max distance to draw line
+        const NODE_COUNT = isMobile ? 25 : 60;
+        const CONNECTION_DISTANCE = isMobile ? 120 : 180;
         const MOUSE_DISTANCE = 250; // Interaction radius
         const NODE_SPEED = 0.4; // Base drift speed
 

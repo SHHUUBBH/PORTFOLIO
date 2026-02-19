@@ -188,6 +188,8 @@ function ProjectCard({ project, index }: { project: { title: string; description
                         className="w-full h-full object-cover"
                         whileHover={{ scale: 1.08 }}
                         transition={{ duration: 0.5, ease: "easeOut" }}
+                        loading="lazy"
+                        decoding="async"
                     />
                 </div>
 
