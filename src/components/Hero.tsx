@@ -88,14 +88,9 @@ const Hero = () => {
   useEffect(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return;
-    const ctx = gsap.context(() => {
-      gsap.timeline({ defaults: { ease: "power4.out" } })
-        .from(containerRef.current, { opacity: 0, duration: 0.5 })
-        .from(".hero-text-group", { y: 60, opacity: 0, duration: 1, stagger: 0.1, ease: "power3.out" }, "-=0.2")
-        .from(".hero-btn-group", { y: 30, opacity: 0, duration: 0.8, stagger: 0.12, ease: "back.out(1.7)" }, "-=0.6")
-        .from(".floating-photo-container", { scale: 0.7, opacity: 0, duration: 1.2, ease: "power4.out" }, "-=1");
+    gsap.context(() => {
+      gsap.from(".floating-photo-container", { scale: 0.7, opacity: 0, duration: 1.2, ease: "power4.out" });
     }, containerRef);
-    return () => ctx.revert();
   }, []);
 
   return (
@@ -252,7 +247,6 @@ function FloatingPhoto({
               className="w-full h-full object-cover"
               src={portraitImage}
               loading="eager"
-              fetchPriority="high"
               decoding="async"
             />
           </motion.div>

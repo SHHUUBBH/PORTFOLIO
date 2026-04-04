@@ -44,7 +44,7 @@ const Contact = () => {
       });
       gsap.from(".contact-social-item", {
         x: -40, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power3.out",
-        scrollTrigger: { trigger: ".bg-card/20", start: "top 85%", once: true },
+        scrollTrigger: { trigger: ".contact-heading", start: "top 85%", once: true },
       });
     }, sectionRef);
     return () => ctx.revert();

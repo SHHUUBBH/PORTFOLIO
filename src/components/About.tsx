@@ -76,7 +76,7 @@ function AnimatedCounter({ target, suffix = "" }: { target: number | string; suf
 /* ── About Component ────────────────────────────────────────── */
 const About = () => {
   const containerRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "end start"] });
+  const { scrollYProgress } = useScroll({ offset: ["start center", "center center"] });
   const y = useTransform(scrollYProgress, [0, 1], [100, -100]); // Parallax effect
   const y2 = useTransform(scrollYProgress, [0, 1], [-50, 50]); // Parallax effect (bottom blob)
 
